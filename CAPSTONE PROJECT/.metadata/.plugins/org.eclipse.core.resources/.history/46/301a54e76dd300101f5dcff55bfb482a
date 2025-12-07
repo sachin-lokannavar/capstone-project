@@ -1,0 +1,35 @@
+package com.pizzastore.paymentservice.serviceImpl;
+
+import com.pizzastore.paymentservice.beans.Payment;
+import com.pizzastore.paymentservice.repository.PaymentRepository;
+import com.pizzastore.paymentservice.service.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+public class PaymentServiceImpl implements PaymentService {
+
+    @Autowired
+    private PaymentRepository paymentRepository;
+
+    @Override
+    public Payment processPayment(Payment payment) {
+        // 1. Simulate Payment Processing
+        payment.setTransactionId(UUID.randomUUID().toString());
+        payment.setTransactionTime(LocalDateTime.now());
+        
+        // ⭐ CRITICAL: We must set the status to SUCCESS for the order to proceed
+        payment.setStatus("SUCCESS");
+
+        // 2. Save Payment
+        return paymentRepository.save(payment);
+    }
+
+    @Override
+    public Payment getPaymentStatus(Long orderId) {
+        // Simple lookup (assuming standard naming convention)
+        return paymentRepository.findByOrderId(orderId);
+    }
+}

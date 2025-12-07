@@ -1,0 +1,71 @@
+package com.pizzastore.userservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.pizzastore.userservice.service.UserService;
+import com.pizzastore.userservice.beans.User;
+
+@Controller
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping("/register")
+    public String registerPage() {
+        return "register";
+    }
+
+    @GetMapping("/register")
+    public String registerPage(Model model) {
+        // ensure template bindings (if any) have an object to work with
+        model.addAttribute("user", new User());
+        return "register";
+    }
+    
+    @PostMapping("/register")
+    public String register(@ModelAttribute User user, Model model) {
+        try {
+            userService.saveUser(user);
+            return "redirect:/login";
+        } catch (Exception e) {
+            // keep user on form and show a simple error
+            model.addAttribute("error", "Registration failed: " + e.getMessage());
+            return "register";
+        }
+    }
+
+
+    
+    @GetMapping("/test")
+    public String test() {
+        return "register";
+    }
+
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        Model model) {
+        User user = userService.login(username, password);
+        if(user != null) {
+            model.addAttribute("name", user.getName());
+            return "dashboard";
+        }
+        model.addAttribute("error", "Invalid Credentials");
+        return "login";
+    }
+}

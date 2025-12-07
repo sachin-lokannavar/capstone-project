@@ -1,0 +1,20 @@
+package com.pizzastore.userservice.client;
+
+import com.pizzastore.userservice.dto.MessageDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
+
+@FeignClient(name = "message-service")
+public interface MessageClient {
+
+    @PostMapping("/message/api/send")
+    void sendMessage(@RequestBody MessageDto message);
+
+    // ⭐ ADD THIS METHOD ⭐
+    @GetMapping("/message/api/user/{userId}")
+    List<MessageDto> getMessagesByUser(@PathVariable("userId") Long userId);
+}

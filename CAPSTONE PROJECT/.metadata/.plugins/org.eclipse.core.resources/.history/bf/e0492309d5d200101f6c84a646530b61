@@ -1,0 +1,123 @@
+package com.pizzastore.orderservice.controller;
+
+import com.pizzastore.orderservice.client.PaymentClient;
+import com.pizzastore.orderservice.dto.OrderItemRequest;
+import com.pizzastore.orderservice.dto.OrderRequest;
+import com.pizzastore.orderservice.dto.PaymentRequest;
+import com.pizzastore.orderservice.dto.PaymentResponse; 
+import com.pizzastore.orderservice.beans.Order;
+import com.pizzastore.orderservice.beans.OrderItem;
+import com.pizzastore.orderservice.repository.OrderRepository;
+import com.pizzastore.orderservice.service.OrderService; // Import Service
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private PaymentClient paymentClient;
+
+    // ⭐ FIX: Autowire OrderService so you can use getTotalRevenue()
+    @Autowired
+    private OrderService orderService;
+
+    @PostMapping("/place")
+    public Order placeOrder(@RequestBody OrderRequest request) {
+        Order order = new Order();
+        order.setUserId(request.getUserId());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus("PENDING"); 
+
+        List<OrderItem> entityItems = new ArrayList<>();
+        double total = 0.0;
+
+        for (OrderItemRequest itemReq : request.getItems()) {
+            OrderItem item = new OrderItem();
+            item.setMenuItemId(itemReq.getMenuItemId());
+            item.setName(itemReq.getName());
+            item.setPrice(itemReq.getPrice());
+            item.setQuantity(itemReq.getQuantity());
+            
+            // Link item to order
+            item.setOrder(order); 
+
+            total += (item.getPrice() * item.getQuantity());
+            entityItems.add(item);
+        }
+        
+        order.setItems(entityItems);
+        order.setTotalPrice(total);
+        
+        // Save Order first to generate ID
+        Order savedOrder = orderRepository.save(order);
+
+        // Call Payment Service
+        PaymentRequest payReq = new PaymentRequest();
+        payReq.setOrderId(savedOrder.getId());
+        payReq.setAmount(total);
+        
+        try {
+            // ⭐ FIX: Use PaymentResponse to capture the result
+            
+            PaymentResponse payResp = paymentClient.processPayment(payReq);
+            
+            if (payResp != null && payResp.getStatus() != null) {
+                savedOrder.setStatus(payResp.getStatus());
+            } else {
+                 savedOrder.setStatus("PLACED"); // Default if response is simplified
+            }
+        } catch (Exception e) {
+            System.out.println("Payment Error: " + e.getMessage());
+            savedOrder.setStatus("PAYMENT_FAILED");
+        }
+
+        return orderRepository.save(savedOrder);
+    }
+    
+    @GetMapping("/user/{userId}")
+    public List<Order> getOrdersByUser(@PathVariable Long userId) {
+        return orderRepository.findByUserId(userId);
+    }
+    
+    @GetMapping("/all") // Added path to distinguish from user search if needed
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+    
+    @PostMapping("/update/{id}") 
+    public Order updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            order.setStatus(status);
+            return orderRepository.save(order);
+        }
+        return null;
+    }
+    
+    @DeleteMapping("/{id}") 
+    public String cancelOrder(@PathVariable Long id) {
+        Order order = orderRepository.findById(id).orElse(null);
+        if (order != null) {
+            // Optional check
+            // if ("PENDING".equals(order.getStatus())) { ... }
+            orderRepository.deleteById(id);
+            return "Order Cancelled";
+        }
+        return "Order not found";
+    }
+    
+    // ⭐ This now works because orderService is autowired
+    @GetMapping("/revenue")
+    public Double getTotalRevenue() {
+        return orderService.getTotalRevenue();
+    }  
+}

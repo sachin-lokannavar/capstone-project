@@ -1,0 +1,5 @@
+package com.pizzastore.adminservice.repository;
+
+public class AdminRepository {
+
+}

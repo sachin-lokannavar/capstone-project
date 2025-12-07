@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>User Registration</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/register">Register</a>
+        <a href="/login">Login</a>
+        <a href="/admin/login">Admin</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>User Registration</h2>
+
+    <form th:action="@{/register}" method="post">
+
+        <label>Name:</label>
+        <input type="text" name="name" required>
+
+        <label>Username:</label>
+        <input type="text" name="username" required>
+
+        <label>Password:</label>
+        <input type="password" name="password" required>
+
+        <label>Email:</label>
+        <input type="email" name="email" required>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p style="text-align:center; margin-top:10px;">
+        <a href="/login">Already have an account? Login</a>
+    </p>
+</div>
+
+</body>
+</html>

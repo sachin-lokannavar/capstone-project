@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Order History</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .page-title { text-align: center; color: #d9534f; margin-bottom: 30px; }
+        .order-card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden; border-left: 5px solid #d9534f; }
+        .order-header { background-color: #eee; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ddd; }
+        .order-status { padding: 5px 12px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; background-color: #ddd; }
+        .order-body { padding: 20px; }
+        .item-list { list-style: none; padding: 0; margin: 0; }
+        .item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #eee; }
+        .order-footer { background-color: #fafafa; padding: 15px 20px; text-align: right; border-top: 1px solid #eee; }
+        .total-amount { font-size: 1.3em; color: #d9534f; font-weight: bold; }
+        .btn-back { display: inline-block; margin-top: 20px; text-decoration: none; color: #555; background: #e2e6ea; padding: 10px 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="page-title">🍕 My Order History</h2>
+
+    <div th:if="${orders == null or orders.empty}" style="text-align:center; padding:50px; background:white;">
+        <h3>No orders found.</h3>
+        <a href="/user/menu" class="btn-back">Order Now</a>
+    </div>
+
+    <div th:each="order : ${orders}" class="order-card">
+        <div class="order-header">
+            <div>
+                <b>Order #<span th:text="${order.id}"></span></b><br>
+                <small th:text="${order.orderDate}">Date</small>
+            </div>
+            <span class="order-status" th:text="${order.status}">STATUS</span>
+        </div>
+        <div class="order-body">
+            <ul class="item-list">
+                <li th:each="item : ${order.items}" class="item-row">
+                    <span th:text="${item.quantity} + ' x ' + ${item.name}">Item</span>
+                    <span th:text="'$' + ${item.price * item.quantity}">Price</span>
+                </li>
+            </ul>
+        </div>
+        <div class="order-footer">
+            Total: <span class="total-amount" th:text="'$' + ${order.totalPrice}"></span>
+        </div>
+    </div>
+    
+    <div style="text-align: center;">
+        <a href="/user/dashboard" class="btn-back">Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

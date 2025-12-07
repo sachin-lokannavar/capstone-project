@@ -1,0 +1,13 @@
+1764650089300	Rename type 'Repository'
+1764658114836	Rename resource 'login.html'
+1764662230299	Delete element
+1764662272005	Delete element
+1764662283095	Delete element
+1764662335359	Delete element
+1764662355216	Delete element
+1764663545031	Rename type 'AdminService'
+1764664022604	Rename package 'com.pizzastore.adminservice.bean'
+1764664135811	Delete element
+1764672680096	Delete element
+1765002768367	Move 'order-list.html' to 'admin'
+1765014740580	Rename compilation unit 'Messagedto.java'

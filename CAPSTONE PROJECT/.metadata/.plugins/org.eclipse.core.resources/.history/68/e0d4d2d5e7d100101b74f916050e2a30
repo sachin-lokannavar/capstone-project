@@ -1,0 +1,5 @@
+package com.pizzastore.orderservice.exception;
+
+public class GlobalExceptionHandler {
+
+}

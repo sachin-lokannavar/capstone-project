@@ -1,0 +1,62 @@
+package com.pizzastore.adminservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.pizzastore.adminservice.entity.Admin;
+import com.pizzastore.adminservice.service.AdminService;
+
+@Controller
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("admin", new Admin());
+        return "admin-register";
+    }
+
+    @PostMapping("/register")
+    public String registerAdmin(@ModelAttribute Admin admin, Model model) {
+        adminService.saveAdmin(admin);
+        // ⭐ CHANGED: Removed /admin prefix
+        return "redirect:/login";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "admin-login";
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        Model model) {
+
+        Admin admin = adminService.login(username, password);
+
+        if (admin != null) {
+            model.addAttribute("name", admin.getName());
+            return "admin-dashboard";
+        }
+
+        model.addAttribute("error", "Invalid Credentials");
+        return "admin-login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(Model model) {
+        model.addAttribute("message", "Logged out successfully.");
+        // ⭐ CHANGED: Removed /admin prefix
+        return "redirect:/login";
+    }
+}

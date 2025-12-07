@@ -1,0 +1,96 @@
+package com.pizzastore.userservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
+import com.pizzastore.userservice.client.MenuClient;
+import com.pizzastore.userservice.beans.User;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.pizzastore.userservice.service.UserService; // Import this
+import com.pizzastore.userservice.beans.User;
+import java.util.List;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+    @Autowired
+    private MenuClient menuClient;
+    @Autowired private UserService userService;
+
+    // Helper to secure admin pages
+    private boolean isAdmin(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        // Checks if user exists AND if their name/email contains "admin"
+        return user != null && (user.getName().toLowerCase().contains("admin") || user.getEmail().toLowerCase().contains("admin"));
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        return "admin-dashboard";
+    }
+
+    @GetMapping("/menu")
+    public String manageMenu(Model model, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        model.addAttribute("menuItems", menuClient.getAllItems());
+        return "admin-menu";
+    }
+
+    @GetMapping("/menu/add")
+    public String showAddForm(HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        return "add-item";
+    }
+
+    @PostMapping("/menu/save")
+    public String saveItem(@RequestParam String name,
+                           @RequestParam Double price,
+                           @RequestParam String description,
+                           @RequestParam String imageUrl,
+                           HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+
+        // Create map to mimic JSON object for the API
+        Map<String, Object> newItem = new HashMap<>();
+        newItem.put("name", name);
+        newItem.put("price", price);
+        newItem.put("description", description);
+        newItem.put("imageUrl", imageUrl);
+        newItem.put("available", true);
+
+        menuClient.addItem(newItem);
+        return "redirect:/admin/menu";
+    }
+
+    @GetMapping("/menu/delete/{id}")
+    public String deleteItem(@PathVariable Long id, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        menuClient.deleteItem(id);
+        return "redirect:/admin/menu";
+    }
+    @GetMapping("/users")
+    public String manageUsers(Model model, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin-users"; // We will create this HTML next
+    }
+
+    // ⭐ NEW: Delete User
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable Long id, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        
+        userService.deleteUser(id);
+        return "redirect:/admin/users?deleted=true";
+    }
+}
+    
+}

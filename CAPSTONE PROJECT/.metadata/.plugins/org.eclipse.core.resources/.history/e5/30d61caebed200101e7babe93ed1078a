@@ -1,0 +1,42 @@
+package com.pizzastore.adminservice.controller;
+
+import com.pizzastore.adminservice.client.UserClient;
+import com.pizzastore.adminservice.dto.UserDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+
+@Controller
+@RequestMapping("/users") // Maps to /admin/users
+public class AdminUserController {
+
+    @Autowired
+    private UserClient userClient;
+
+    @GetMapping
+    public String viewUsers(Model model, HttpSession session) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
+
+        List<UserDto> users = userClient.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin/user-list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteUser(@PathVariable Long id, HttpSession session) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
+        
+        userClient.deleteUser(id);
+        return "redirect:/admin/users?deleted=true";
+    }
+}

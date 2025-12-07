@@ -1,0 +1,5 @@
+package com.pizzastore.adminservice.serviceImpl;
+
+public class AdminServiceImpl {
+
+}

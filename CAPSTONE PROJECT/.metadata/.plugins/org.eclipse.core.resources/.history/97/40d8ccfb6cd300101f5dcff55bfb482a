@@ -1,0 +1,16 @@
+package com.pizzastore.menuservice;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
+
+@SpringBootApplication
+// ⭐ SAFETY NET: This forces Spring to look in ALL folders for your Controller
+@ComponentScan(basePackages = "com.pizzastore") 
+public class MenuServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(MenuServiceApplication.class, args);
+	}
+
+}

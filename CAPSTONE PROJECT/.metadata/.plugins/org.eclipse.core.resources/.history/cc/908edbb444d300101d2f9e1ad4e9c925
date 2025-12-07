@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .dashboard-container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 350px; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 30px; }
+        
+        /* Buttons */
+        .btn { display: block; width: 100%; padding: 12px; margin: 10px 0; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; text-decoration: none; box-sizing: border-box; transition: background 0.3s; color: white; }
+        
+        .btn-menu { background-color: #28a745; }
+        .btn-menu:hover { background-color: #218838; }
+
+        .btn-history { background-color: #17a2b8; }
+        .btn-history:hover { background-color: #138496; }
+
+        .btn-contact { background-color: #6c757d; } /* Gray Color */
+        .btn-contact:hover { background-color: #5a6268; }
+
+        .btn-cart { background-color: #ffc107; color: #333; }
+        .btn-cart:hover { background-color: #e0a800; }
+
+        .btn-logout { background-color: #dc3545; }
+        .btn-logout:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <h2>Welcome, <span th:text="${name}">User</span>!</h2>
+    <p>What would you like to do today?</p>
+
+    <a href="/user/menu" class="btn btn-menu">🍕 View Menu</a>
+    
+    <a href="/user/my-orders" class="btn btn-history">📜 My Order History</a>
+    
+    <a href="/user/contact" class="btn btn-contact">📞 Contact Support</a>
+    
+    <a href="/user/cart" class="btn btn-cart">🛒 Go to Cart</a>
+    <a href="/user/logout" class="btn btn-logout">Logout</a>
+</div>
+
+</body>
+</html>

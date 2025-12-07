@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Users</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .user-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        .user-table th, .user-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .user-table th { background-color: #34495e; color: white; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 800px;">
+    <h2>👥 User Management</h2>
+    <a th:href="@{/dashboard}" class="btn" style="background:#7f8c8d; margin-bottom:10px;">Back to Dashboard</a>
+
+    <div th:if="${param.deleted}" style="color: green; text-align: center; margin: 10px 0;">
+        User deleted successfully.
+    </div>
+
+    <table class="user-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.id}"></td>
+                <td th:text="${u.name}"></td>
+                <td th:text="${u.username}"></td>
+                <td th:text="${u.email}"></td>
+                <td>
+                    <a th:href="@{/users/delete/{id}(id=${u.id})}" 
+                       class="btn-delete"
+                       onclick="return confirm('Delete this user?');">
+                       Delete
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

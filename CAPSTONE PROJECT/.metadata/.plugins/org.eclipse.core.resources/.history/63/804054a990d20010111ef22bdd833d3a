@@ -1,0 +1,27 @@
+package com.pizzastore.messageservice.beans;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Entity
+@Data
+@Table(name = "messages")
+public class Message {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long userId;
+    private String username;
+    private String content;
+    private LocalDateTime sentAt;
+    
+    // ⭐ NEW FIELD ⭐
+    private String adminReply; 
+
+    // (Keep your manual getters/setters if you aren't using Lombok)
+    public String getAdminReply() { return adminReply; }
+    public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
+    // ... other getters/setters ...
+}

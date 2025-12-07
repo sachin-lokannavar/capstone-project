@@ -1,0 +1,16 @@
+package com.pizzastore.adminservice.client;
+
+import com.pizzastore.adminservice.dto.MessageDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import java.util.List;
+
+// Connects to the "message-service" via Eureka
+@FeignClient(name = "message-service")
+public interface MessageClient {
+
+    // Matches the Controller in Message Service: /message/api/all
+    // Context path is /message, endpoint is /api/all
+    @GetMapping("/message/api/all")
+    List<MessageDto> getAllMessages();
+}

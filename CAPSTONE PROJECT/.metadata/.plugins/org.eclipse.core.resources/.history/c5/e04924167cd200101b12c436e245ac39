@@ -1,0 +1,20 @@
+package com.pizzastore.userservice.client;
+
+import com.pizzastore.userservice.dto.OrderRequest;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import java.util.List;
+
+@FeignClient(name = "order-service")
+public interface OrderClient {
+
+    @PostMapping("/order/orders/place")
+    Object placeOrder(@RequestBody OrderRequest request);
+
+    // Ensure this matches your Order Service Controller URL exactly!
+    @GetMapping("/order/orders/user/{userId}")
+    List<Object> getOrdersByUser(@PathVariable("userId") Long userId);
+}

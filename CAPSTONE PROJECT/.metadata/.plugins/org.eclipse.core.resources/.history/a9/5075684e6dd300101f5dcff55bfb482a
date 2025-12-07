@@ -1,0 +1,45 @@
+package com.pizzastore.messageservice.beans;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import java.time.LocalDateTime;
+
+@Entity
+@Data
+@Table(name = "messages")
+public class Message {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private Long userId;
+    private String username;
+    private String content;
+    
+    // ⭐ THIS FIELD WAS MISSING OR HAD NO SETTER ⭐
+    private LocalDateTime sentAt; 
+    
+    // ⭐ NEW FIELD FOR ADMIN REPLY ⭐
+    private String adminReply;
+
+    // --- MANUAL GETTERS & SETTERS (To fix your error) ---
+    
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
+    
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+    
+    public LocalDateTime getSentAt() { return sentAt; }
+    public void setSentAt(LocalDateTime sentAt) { this.sentAt = sentAt; } // <--- This fixes the error
+    
+    public String getAdminReply() { return adminReply; }
+    public void setAdminReply(String adminReply) { this.adminReply = adminReply; }
+}

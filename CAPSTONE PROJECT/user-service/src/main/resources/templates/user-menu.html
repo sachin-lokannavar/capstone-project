@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Our Menu</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    </head>
+<body>
+<div class="container" style="width: 90%;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2>Our Delicious Menu</h2>
+        
+        <form action="/user/menu" method="get" style="display:flex; gap:10px; margin:0;">
+            <input type="text" name="keyword" th:value="${keyword}" placeholder="Search pizza..." style="width:200px; padding:8px;">
+            <button type="submit" style="width:auto; padding:8px 15px; background:#007bff;">Search</button>
+            <a href="/user/menu" style="padding:8px 15px; background:#6c757d; color:white; border-radius:4px; text-decoration:none;">Reset</a>
+        </form>
+    </div>
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a th:href="@{/dashboard}">Dashboard</a>
+        <a th:href="@{/cart}">🛒 View Cart</a> <a th:href="@{/logout}">Logout</a>
+        <a href="/user/my-orders" style="margin-right: 15px; color: white; text-decoration: none;">My Orders</a>
+    </div>
+</div>
+
+<div class="container" style="width: 90%;">
+    <h2>Our Delicious Menu</h2>
+    
+    <div class="menu-grid">
+        <div class="card" th:each="item : ${menuItems}" th:if="${item.available}">
+            <img th:if="${item.imageUrl != null}" th:src="${item.imageUrl}" alt="Pizza" width="150" height="150">
+            <h3 th:text="${item.name}">Pizza</h3>
+            <p th:text="${item.description}"></p>
+            <p style="font-weight:bold; color:green;" th:text="'$' + ${item.price}"></p>
+            
+            <a th:href="@{/cart/add/{id}(id=${item.id}, name=${item.name}, price=${item.price})}" 
+               class="btn-buy" 
+               style="background:#ff9800; color:white; padding:10px; text-decoration:none; border-radius:5px;">
+               Add to Cart
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

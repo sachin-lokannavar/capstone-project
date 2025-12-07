@@ -1,0 +1,19 @@
+package com.pizzastore.orderservice.repository;
+
+import com.pizzastore.orderservice.beans.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import java.util.List;
+
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {
+    
+    List<Order> findByUserId(Long userId);
+    
+    // ⭐ FIX: Only calculate revenue for orders that are actually DELIVERED.
+    // This strictly follows the rule: Revenue is 0 until the order is fully delivered.
+    // This automatically excludes 'CANCELLED', 'COOKING', 'PENDING', or 'PAYMENT_FAILED'.
+    @Query("SELECT SUM(o.totalPrice) FROM Order o WHERE o.status = 'DELIVERED'")
+    Double getTotalRevenue();
+}

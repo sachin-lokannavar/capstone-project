@@ -1,0 +1,47 @@
+package com.pizzastore.adminservice.controller;
+
+import com.pizzastore.adminservice.client.MessageClient;
+import com.pizzastore.adminservice.dto.MessageDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+
+@Controller
+// Note: Base path /admin is handled by server.servlet.context-path in application.properties
+public class AdminMessageController {
+
+    @Autowired
+    private MessageClient messageClient;
+
+    @GetMapping("/messages") 
+    public String viewMessages(Model model, HttpSession session) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
+
+        List<MessageDto> messages = messageClient.getAllMessages();
+        model.addAttribute("messages", messages);
+        
+        return "admin/message-list"; 
+    }
+
+    @PostMapping("/messages/reply")
+    public String sendReply(@RequestParam Long id, @RequestParam String reply, HttpSession session) {
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
+        
+        // Call the backend service (Feign Client)
+        messageClient.replyToMessage(id, reply);
+        
+        // FIX: Redirect to "/messages", NOT "/admin/messages"
+        // Spring automatically prepends the context path (/admin)
+        return "redirect:/messages";
+    }
+}

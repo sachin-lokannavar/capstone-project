@@ -1,0 +1,5 @@
+package com.pizzastore.userservice.service.impl;
+
+public class UserService {
+
+}

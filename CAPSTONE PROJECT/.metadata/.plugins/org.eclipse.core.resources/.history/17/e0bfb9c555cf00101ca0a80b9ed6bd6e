@@ -1,0 +1,5 @@
+package com.pizzastore.adminservice.bean;
+
+public class Admin {
+
+}

@@ -1,0 +1,100 @@
+package com.pizzastore.userservice.controller;
+
+import com.pizzastore.userservice.beans.User;
+import com.pizzastore.userservice.client.OrderClient;
+import com.pizzastore.userservice.dto.OrderRequest; // Assuming you have an Order DTO
+import com.pizzastore.userservice.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@Controller
+// Note: No @RequestMapping("/user") here because context-path handles it globally
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+    
+    @Autowired
+    private OrderClient orderClient; // To fetch orders
+
+    @GetMapping("/")
+    public String home() {
+        return "home"; // Landing page
+    }
+
+    @GetMapping("/login")
+    public String loginPage(Model model) {
+        return "login";
+    }
+    
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
+        User user = userService.login(username, password);
+        if (user != null) {
+            session.setAttribute("user", user); // ⭐ Store User in Session
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("error", "Invalid Credentials");
+        return "login";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login"; // Protect Dashboard
+        
+        model.addAttribute("name", user.getName());
+        return "dashboard";
+    }
+
+    // ⭐ NEW: My Orders Page
+    @GetMapping("/my-orders")
+    public String myOrders(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        // Fetch orders using Feign Client
+        try {
+            List<Object> orders = orderClient.getOrdersByUser(user.getId());
+            model.addAttribute("orders", orders);
+        } catch (Exception e) {
+            model.addAttribute("error", "Could not fetch orders.");
+        }
+        
+        return "my-orders";
+    }
+
+    // ⭐ NEW: Contact Page
+    @GetMapping("/contact")
+    public String contactPage() {
+        return "contact"; // Make sure you have contact.html
+    }
+
+    // ⭐ NEW: Cart Page
+    @GetMapping("/cart")
+    public String cartPage(HttpSession session) {
+        if (session.getAttribute("user") == null) return "redirect:/login";
+        return "cart"; // Make sure you have cart.html
+    }
+    
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login?logout";
+    }
+    
+    // Register Methods
+    @GetMapping("/register")
+    public String showRegister() { return "register"; }
+
+    @PostMapping("/register")
+    public String register(@ModelAttribute User user) {
+        userService.saveUser(user);
+        return "redirect:/login";
+    }
+}

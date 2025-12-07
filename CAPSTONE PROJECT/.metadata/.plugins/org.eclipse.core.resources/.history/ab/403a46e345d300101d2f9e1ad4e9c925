@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .error-container {
+            text-align: center;
+            padding: 50px;
+            background-color: #fff0f0;
+            border: 1px solid #ffcccc;
+            border-radius: 10px;
+            margin: 50px auto;
+            max-width: 600px;
+        }
+        .error-icon { font-size: 50px; color: red; margin-bottom: 20px; }
+        .error-message { font-size: 18px; color: #333; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+    </div>
+</div>
+
+<div class="error-container">
+    <div class="error-icon">⚠️</div>
+    <h2>Oops! Something went wrong.</h2>
+    
+    <p class="error-message" th:text="${errorMessage}">Unknown Error</p>
+
+    <a href="/login" class="btn">Go Back Home</a>
+</div>
+
+</body>
+</html>

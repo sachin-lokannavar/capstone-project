@@ -1,0 +1,64 @@
+package com.pizzastore.menuservice.controller;
+
+import com.pizzastore.menuservice.beans.MenuItem;
+import com.pizzastore.menuservice.beans.MenuCategory;
+import com.pizzastore.menuservice.repository.MenuItemRepository;
+import com.pizzastore.menuservice.repository.MenuCategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@RestController
+@RequestMapping("/menu")
+public class MenuController {
+
+    @Autowired private MenuItemRepository menuItemRepo;
+    @Autowired private MenuCategoryRepository categoryRepo;
+
+    @GetMapping("/items")
+    public List<MenuItem> getAllItems() { return menuItemRepo.findAll(); }
+
+    @GetMapping("/categories")
+    public List<MenuCategory> getAllCategories() { return categoryRepo.findAll(); }
+
+    @PostMapping("/items")
+    public MenuItem addItem(@RequestBody MenuItem item) {
+        // --- FIX: Actually fetch and set the category ---
+        if(item.getCategory() != null && item.getCategory().getCategoryId() != null) {
+             MenuCategory existingCategory = categoryRepo.findById(item.getCategory().getCategoryId())
+                .orElse(null);
+             item.setCategory(existingCategory);
+        }
+        return menuItemRepo.save(item);
+    }
+
+    @GetMapping("/items/{id}")
+    public MenuItem getItemById(@PathVariable Long id) {
+        return menuItemRepo.findById(id).orElseThrow(() -> new RuntimeException("Not Found"));
+    }
+
+    @PutMapping("/items/{id}")
+    public MenuItem updateItem(@PathVariable Long id, @RequestBody MenuItem item) {
+        MenuItem existing = menuItemRepo.findById(id).orElseThrow(() -> new RuntimeException("Not Found"));
+        
+        existing.setName(item.getName());
+        existing.setPrice(item.getPrice());
+        existing.setDescription(item.getDescription());
+        existing.setImageUrl(item.getImageUrl());
+        existing.setAvailable(item.getAvailable());
+        
+        // --- FIX: Update Category Link ---
+        if (item.getCategory() != null && item.getCategory().getCategoryId() != null) {
+             MenuCategory existingCategory = categoryRepo.findById(item.getCategory().getCategoryId())
+                .orElse(null);
+            existing.setCategory(existingCategory);
+        }
+        
+        return menuItemRepo.save(existing);
+    }
+
+    @DeleteMapping("/items/{id}")
+    public void deleteItem(@PathVariable Long id) {
+        menuItemRepo.deleteById(id);
+    }
+}

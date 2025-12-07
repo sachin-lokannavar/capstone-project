@@ -1,0 +1,78 @@
+package com.pizzastore.orderservice.controller;
+
+import com.pizzastore.orderservice.client.PaymentClient;
+import com.pizzastore.orderservice.dto.OrderItemRequest;
+import com.pizzastore.orderservice.dto.OrderRequest;
+import com.pizzastore.orderservice.dto.PaymentRequest;
+import com.pizzastore.orderservice.dto.PaymentResponse; // Assumed response class
+import com.pizzastore.orderservice.beans.Order;
+import com.pizzastore.orderservice.beans.OrderItem;
+import com.pizzastore.orderservice.repository.OrderRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+@RequestMapping("/orders")
+public class OrderController {
+
+    @Autowired
+    private OrderRepository orderRepository;
+    
+    @Autowired
+    private PaymentClient paymentClient;
+
+    @PostMapping("/place")
+    public Order placeOrder(@RequestBody OrderRequest request) {
+        Order order = new Order();
+        order.setUserId(request.getUserId());
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus("PENDING"); // Set status early
+
+        List<OrderItem> entityItems = new ArrayList<>();
+        double total = 0.0;
+
+        for (OrderItemRequest itemReq : request.getItems()) {
+            OrderItem item = new OrderItem();
+            item.setMenuItemId(itemReq.getMenuItemId());
+            item.setName(itemReq.getName());
+            item.setPrice(itemReq.getPrice());
+            item.setQuantity(itemReq.getQuantity());
+            
+            // CRITICAL FIX: Link the item back to the order for the database relationship
+            item.setOrder(order); 
+
+            total += (item.getPrice() * item.getQuantity());
+            entityItems.add(item);
+        }
+        
+        order.setItems(entityItems);
+        order.setTotalPrice(total);
+        
+        // Save Order (Cascade will save OrderItems automatically)
+        Order savedOrder = orderRepository.save(order);
+
+        // Call Payment Service
+        PaymentRequest payReq = new PaymentRequest();
+        payReq.setOrderId(savedOrder.getId());
+        payReq.setAmount(total);
+        
+        try {
+            // Assuming the client returns PaymentRequest or a specific Response DTO
+            PaymentRequest payResp = paymentClient.processPayment(payReq);
+            savedOrder.setStatus(payResp.getStatus());
+        } catch (Exception e) {
+            savedOrder.setStatus("PAYMENT_FAILED");
+        }
+
+        return orderRepository.save(savedOrder);
+    }
+    
+    @GetMapping("/user/{userId}")
+    public List<Order> getOrdersByUser(@PathVariable Long userId) {
+        return orderRepository.findByUserId(userId);
+    }
+}

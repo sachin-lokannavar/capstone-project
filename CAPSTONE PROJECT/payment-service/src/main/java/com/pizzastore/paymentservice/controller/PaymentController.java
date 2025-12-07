@@ -1,0 +1,24 @@
+package com.pizzastore.paymentservice.controller;
+
+import com.pizzastore.paymentservice.beans.Payment;
+import com.pizzastore.paymentservice.service.PaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+
+public class PaymentController {
+
+    @Autowired
+    private PaymentService paymentService;
+
+    @PostMapping("/process")
+    public Payment processPayment(@RequestBody Payment payment) {
+        return paymentService.processPayment(payment);
+    }
+
+    @GetMapping("/{orderId}")
+    public Payment getPaymentStatus(@PathVariable Long orderId) {
+        return paymentService.getPaymentStatus(orderId);
+    }
+}

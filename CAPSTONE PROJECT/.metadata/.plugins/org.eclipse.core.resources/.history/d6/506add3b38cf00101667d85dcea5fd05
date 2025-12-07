@@ -1,0 +1,5 @@
+package com.pizzastore.repository;
+
+public class Repository {
+
+}

@@ -1,0 +1,13 @@
+package com.pizzastore.orderservice.client;
+
+import com.pizzastore.orderservice.dto.PaymentRequest;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import com.pizzastore.orderservice.dto.PaymentResponse;
+
+@FeignClient(name = "payment-service")
+public interface PaymentClient {
+    @PostMapping("/payment/process")
+    PaymentResponse processPayment(@RequestBody PaymentRequest payment);
+}

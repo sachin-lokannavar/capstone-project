@@ -1,0 +1,33 @@
+package com.pizzastore.adminservice.controller;
+
+import com.pizzastore.adminservice.client.MessageClient;
+import com.pizzastore.adminservice.dto.MessageDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
+
+@Controller
+@RequestMapping("/admin") // This maps to /admin/admin/... (Check note below)
+public class AdminMessageController {
+
+    @Autowired
+    private MessageClient messageClient;
+
+    @GetMapping("/messages") // URL: /admin/messages
+    public String viewMessages(Model model, HttpSession session) {
+        // Security Check
+        if (session.getAttribute("loggedInAdmin") == null) {
+            return "redirect:/login";
+        }
+
+        List<MessageDto> messages = messageClient.getAllMessages();
+        model.addAttribute("messages", messages);
+        
+        // Returns the HTML file "message-list.html" inside templates/admin/
+        return "admin/message-list"; 
+    }
+}

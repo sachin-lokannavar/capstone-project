@@ -1,0 +1,5 @@
+package com.pizzastore.controller;
+
+public class AdminController {
+
+}

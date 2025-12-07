@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Customer Messages</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .message-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .message-table th, .message-table td { padding: 15px; border: 1px solid #ddd; text-align: left; vertical-align: top; }
+        .message-table th { background-color: #34495e; color: white; }
+        .msg-content { color: #333; font-style: normal; background: #f9f9f9; padding: 10px; border-radius: 5px; display: block; }
+        .msg-date { font-size: 0.85em; color: #888; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 900px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>📨 Customer Support Inbox</h2>
+        <a th:href="@{/dashboard}" class="btn" style="background-color: #7f8c8d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px;">Back to Dashboard</a>
+    </div>
+
+    <table class="message-table">
+        <thead>
+            <tr>
+                <th style="width: 15%;">From</th>
+                <th style="width: 40%;">Message</th>
+                <th style="width: 45%;">Admin Reply</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="msg : ${messages}">
+                <td>
+                    <strong th:text="${msg.username}">User</strong><br>
+                    <small style="color:#888;" th:text="${msg.sentAt}">Date</small>
+                </td>
+                
+                <td>
+                    <div class="msg-content" th:text="${msg.content}">Content</div>
+                </td>
+                
+                <td>
+                    <div th:if="${msg.adminReply != null}" 
+                         style="background:#d4edda; color:#155724; padding:10px; border-radius:5px;">
+                        <strong>You replied:</strong><br>
+                        <span th:text="${msg.adminReply}"></span>
+                    </div>
+
+                    <div th:if="${msg.adminReply == null}">
+                        <form action="/messages/reply" method="post">
+                            <input type="hidden" name="id" th:value="${msg.id}">
+                            <textarea name="reply" rows="2" required placeholder="Type your reply..." 
+                                      style="width:100%; padding:5px; border:1px solid #ccc; border-radius:3px;"></textarea>
+                            <button type="submit" 
+                                    style="margin-top:5px; background-color:#17a2b8; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">
+                                Reply
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${messages == null or messages.empty}" style="text-align:center; padding:40px; color: #777;">
+        <h3>No messages yet.</h3>
+        <p>Your inbox is empty.</p>
+    </div>
+</div>
+</body>
+</html>

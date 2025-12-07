@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pizza Store - Home</title>
+    <link rel="stylesheet" th:href="@{/user/css/style.css}">
+    
+</head>
+<body>
+<h2>Welcome to Pizza Store User Service</h2>
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/register">Register</a>
+        <a href="/login">Login</a>
+        <a href="/admin/login">Admin</a>
+    </div>
+</div>
+
+<a href="/register">Register</a> |
+<a href="/login">Login</a>
+
+</body>
+</html>

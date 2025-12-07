@@ -1,0 +1,5 @@
+package com.pizzastore.messageservice.beans;
+
+public class Message {
+
+}

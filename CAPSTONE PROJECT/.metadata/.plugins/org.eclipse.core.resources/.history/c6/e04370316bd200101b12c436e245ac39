@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Orders</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container">
+    <div class="navbar">
+        <span>🍕 My Orders</span>
+        <a href="/user/dashboard">Back to Dashboard</a>
+    </div>
+
+    <h2>Order History</h2>
+    <a href="/order/place" class="btn"> + Place New Order</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Pizza</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="o : ${orders}">
+                <td th:text="${o.id}"></td>
+                <td th:text="${o.pizzaName}"></td>
+                <td th:text="${o.quantity}"></td>
+                <td th:text="${'$' + o.totalPrice}"></td>
+                <td th:text="${o.status}"></td>
+                <td>
+                    <a th:href="@{'/payment/pay?orderId=' + ${o.id} + '&amount=' + ${o.totalPrice}}" 
+                       class="btn" style="background-color: green; margin-right: 5px;">Pay</a>
+                       
+                    <a th:href="@{/cancel/{id}(id=${o.id})}" class="btn btn-danger" 
+                       onclick="return confirm('Cancel this order?')">Cancel</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+package com.pizzastore.adminservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import com.pizzastore.adminservice.entity.Admin;
+import com.pizzastore.adminservice.service.AdminService;
+
+@Controller
+// NOTE: NO @RequestMapping("/admin") here! The properties file handles it.
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @GetMapping("/")
+    public String home() { return "home"; }
+
+    @GetMapping("/login")
+    public String loginPage() { return "admin-login"; }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password, Model model) {
+        Admin admin = adminService.login(username, password);
+        if (admin != null) {
+            model.addAttribute("name", admin.getName());
+            return "admin-dashboard";
+        }
+        model.addAttribute("error", "Invalid Credentials");
+        return "admin-login";
+    }
+
+    @GetMapping("/register")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("admin", new Admin());
+        return "admin-register";
+    }
+
+    @PostMapping("/register")
+    public String registerAdmin(@ModelAttribute Admin admin) {
+        adminService.saveAdmin(admin);
+        return "redirect:/login"; // Automatically becomes /admin/login
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(Model model) {
+        model.addAttribute("name", "Admin");
+        return "admin-dashboard";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login";
+    }
+}

@@ -1,0 +1,5 @@
+package com.pizzastore.messageservice.controller;
+
+public class MessageController {
+
+}

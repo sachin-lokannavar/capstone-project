@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a href="/user/">Home</a>
+        <a href="/user/register">Register</a>
+        <a href="/user/login">Login</a>
+        <a th:href="@{/login}">Admin</a>
+    </div>
+</div>
+
+<div class="container">
+    <h1>Welcome Admin!</h1>
+
+    <h2 th:text="'Hello, ' + ${name}"></h2>
+
+    <p>You are now logged in as an administrator.</p>
+    
+    <a th:href="@{/logout}" style="color:red; font-weight:bold;">Logout</a>
+</div>
+
+</body>
+</html>

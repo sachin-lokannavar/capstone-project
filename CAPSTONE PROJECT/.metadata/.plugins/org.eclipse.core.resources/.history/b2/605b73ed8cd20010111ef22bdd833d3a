@@ -1,0 +1,20 @@
+package com.pizzastore.adminservice.controller;
+
+import com.pizzastore.adminservice.client.MessageClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AdminMessageController {
+
+    @Autowired
+    private MessageClient messageClient;
+
+    @GetMapping("/admin/messages")
+    public String viewMessages(Model model) {
+        model.addAttribute("messages", messageClient.getAllMessages());
+        return "admin/message-list";
+    }
+}

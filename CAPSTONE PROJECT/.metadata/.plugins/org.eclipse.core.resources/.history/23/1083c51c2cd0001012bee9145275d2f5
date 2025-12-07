@@ -1,0 +1,17 @@
+# Config Service Port
+server.port=8888
+
+# Service Name
+spring.application.name=config-service
+
+# Enable Native File-Based Config
+spring.profiles.active=native
+spring.cloud.config.server.native.search-locations=classpath:/config
+
+# Eureka Server URL
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+
+# Optional logging (helps you see config loading)
+logging.level.org.springframework.cloud.config=DEBUG

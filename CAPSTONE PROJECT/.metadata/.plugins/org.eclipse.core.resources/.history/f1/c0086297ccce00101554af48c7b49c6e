@@ -1,0 +1,10 @@
+package com.pizzastore.userservice.service.impl;
+
+import com.pizzastore.userservice.beans.User;
+
+public interface UserService {
+
+    User saveUser(User user);
+
+    User login(String username, String password);
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Users</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+        th, td { padding: 12px; border-bottom: 1px solid #ddd; text-align: left; }
+        th { background-color: #34495e; color: white; }
+        .btn-delete { background-color: #e74c3c; color: white; padding: 5px 10px; border-radius: 3px; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 800px;">
+    <h2>👥 User Management</h2>
+    <a href="/admin/dashboard" class="btn" style="background:#7f8c8d; margin-bottom:10px;">Back to Dashboard</a>
+
+    <div th:if="${param.deleted}" style="color: green; text-align: center; margin-bottom: 10px;">
+        User deleted successfully.
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="u : ${users}">
+                <td th:text="${u.id}">1</td>
+                <td th:text="${u.name}">John</td>
+                <td th:text="${u.username}">john123</td>
+                <td th:text="${u.email}">john@test.com</td>
+                <td>
+                    <a th:if="${session.loggedInUser.username != u.username}"
+                       th:href="@{/admin/users/delete/{id}(id=${u.id})}" 
+                       class="btn-delete"
+                       onclick="return confirm('Delete this user? This cannot be undone.');">
+                       Delete
+                    </a>
+                    <span th:if="${session.loggedInUser.username == u.username}" style="color:gray;">(You)</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

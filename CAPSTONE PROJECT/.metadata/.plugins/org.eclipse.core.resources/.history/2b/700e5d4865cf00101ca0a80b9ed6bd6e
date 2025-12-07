@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Pizza Store - Home</title>
+</head>
+<body>
+<h2>Welcome to Pizza Store User Service</h2>
+
+<a href="/register">Register</a> |
+<a href="/login">Login</a>
+
+</body>
+</html>

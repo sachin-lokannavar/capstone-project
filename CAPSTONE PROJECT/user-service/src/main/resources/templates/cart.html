@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Shopping Cart</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="navbar">
+    <div class="nav-logo">🍕 Pizza Store</div>
+    <div class="nav-links">
+        <a th:href="@{/menu}">Back to Menu</a>
+        <a th:href="@{/cart/clear}" style="color: #ff4d4d;" onclick="return confirm('Empty your entire cart?');">Clear Cart</a>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Your Cart</h2>
+
+    <div th:if="${cartItems == null or cartItems.isEmpty()}">
+        <p style="text-align:center">Your cart is empty.</p>
+        <div style="text-align:center"><a th:href="@{/menu}" class="btn">Browse Menu</a></div>
+    </div>
+
+    <div th:if="${cartItems != null and !cartItems.isEmpty()}">
+        <table style="width:100%; text-align:left; border-collapse: collapse; margin-top: 20px;">
+            <thead>
+                <tr style="background:#eee;">
+                    <th style="padding:10px;">Item</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th> </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${cartItems}" style="border-bottom:1px solid #ddd;">
+                    <td style="padding:10px;" th:text="${item.name}">Pizza</td>
+                    <td th:text="'$' + ${item.price}">10.00</td>
+                    <td th:text="${item.quantity}">1</td>
+                    <td th:text="'$' + ${item.price * item.quantity}">10.00</td>
+                    <td>
+                        <a th:href="@{/cart/remove/{id}(id=${item.menuItemId})}" 
+                           style="color: red; text-decoration: none; font-weight: bold;"
+                           onclick="return confirm('Remove this item?');">
+                           Remove
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="text-align:right; margin-top:20px;">Total: <span th:text="'$' + ${totalPrice}"></span></h3>
+
+        <div style="text-align:right; margin-top: 20px;">
+            <a th:href="@{/cart/checkout}" class="btn" 
+               style="background:#28a745; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">
+               Checkout & Pay
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

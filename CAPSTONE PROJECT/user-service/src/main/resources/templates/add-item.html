@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add New Pizza</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; background-color: #ecf0f1; }
+        form { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 300px; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; }
+        label { font-weight: bold; font-size: 0.9em; display: block; margin-top: 10px; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #27ae60; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; margin-top: 20px; }
+        button:hover { background-color: #219150; }
+        .back-link { display: block; text-align: center; margin-top: 15px; text-decoration: none; color: #7f8c8d; }
+    </style>
+</head>
+<body>
+    <form action="/admin/menu/save" method="post">
+        <h2>Add New Pizza</h2>
+        
+        <label>Pizza Name</label>
+        <input type="text" name="name" required placeholder="e.g. Pepperoni Feast">
+        
+        <label>Price ($)</label>
+        <input type="number" name="price" step="0.01" required placeholder="12.99">
+        
+        <label>Description</label>
+        <textarea name="description" required placeholder="Delicious cheese..."></textarea>
+        
+        <label>Image URL</label>
+        <input type="text" name="imageUrl" placeholder="http://...">
+        
+        <button type="submit">Save Pizza</button>
+        <a href="/admin/menu" class="back-link">Cancel</a>
+    </form>
+</body>
+</html>

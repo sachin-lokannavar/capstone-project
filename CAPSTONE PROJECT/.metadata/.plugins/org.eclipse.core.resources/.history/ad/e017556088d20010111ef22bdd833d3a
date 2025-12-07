@@ -1,0 +1,5 @@
+package com.pizzastore.messageservice.repository;
+
+public class MessageRepository {
+
+}

@@ -1,0 +1,51 @@
+package com.pizzastore.userservice.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) 
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                .requestMatchers("/", "/login", "/register", "/h2-console/**").permitAll()
+                .requestMatchers("/contact").permitAll()
+                
+                // ⭐ SECURITY FIX: Only ADMIN role can access admin pages
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                
+                // ⭐ SECURITY FIX: Dashboard and Orders require login (Any Role)
+                .requestMatchers("/dashboard", "/menu/**", "/cart/**", "/my-orders/**").authenticated()
+                
+                .anyRequest().authenticated()
+            )
+            .headers(headers -> headers.frameOptions().disable()) 
+            .formLogin(form -> form
+                .loginPage("/login")
+                .defaultSuccessUrl("/dashboard", true)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
+            
+        return http.build();
+    }
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>My Order History</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        /* Header & Title */
+        .page-title { text-align: center; color: #333; margin-bottom: 30px; font-weight: 700; }
+        
+        /* Order Card Styling */
+        .order-card { background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; overflow: hidden; border-left: 6px solid #ddd; transition: transform 0.2s; }
+        .order-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.1); }
+
+        /* Card Header */
+        .order-header { background-color: #f8f9fa; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; }
+        .order-id { font-size: 1.1em; color: #333; }
+        .order-date { color: #777; font-size: 0.9em; }
+
+        /* Dynamic Status Colors */
+        .order-status { padding: 6px 14px; border-radius: 20px; font-size: 0.85em; font-weight: bold; text-transform: uppercase; color: white; letter-spacing: 0.5px; }
+        
+        /* Card Body */
+        .order-body { padding: 20px 25px; }
+        .item-list { list-style: none; padding: 0; margin: 0; }
+        .item-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #f0f0f0; color: #555; }
+        .item-row:last-child { border-bottom: none; }
+
+        /* Card Footer */
+        .order-footer { background-color: #fff; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
+        .total-label { font-size: 1.1em; color: #555; }
+        .total-amount { font-size: 1.3em; color: #28a745; font-weight: bold; }
+
+        /* Buttons */
+        .btn-back { display: inline-block; text-decoration: none; color: #555; background: #e2e6ea; padding: 10px 20px; border-radius: 5px; font-weight: 600; transition: 0.3s; }
+        .btn-back:hover { background: #dbe2e8; }
+        
+        .btn-cancel { background-color: #fff; color: #dc3545; border: 1px solid #dc3545; padding: 8px 16px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 0.9em; transition: 0.3s; }
+        .btn-cancel:hover { background-color: #dc3545; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2 class="page-title">🍕 My Order History</h2>
+
+    <div th:if="${param.cancelled}" style="background-color: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; margin-bottom: 20px; text-align: center; border: 1px solid #f5c6cb;">
+        🗑️ Order has been cancelled successfully.
+    </div>
+
+    <div th:if="${orders == null or orders.empty}" style="text-align:center; padding:60px; background:white; border-radius: 10px;">
+        <h3 style="color:#555; margin-bottom: 20px;">No orders found yet!</h3>
+        <p style="color:#777; margin-bottom: 30px;">Hungry? Go grab a pizza.</p>
+        <a href="/user/menu" class="btn-back" style="background:#28a745; color:white;">Browse Menu</a>
+    </div>
+
+    <div th:each="order : ${orders}" class="order-card"
+         th:style="'border-left: 6px solid ' + 
+         (${order.status == 'PENDING' ? '#ffc107' : 
+           order.status == 'DELIVERED' ? '#28a745' : 
+           order.status == 'CANCELLED' ? '#dc3545' : '#6c757d'})">
+        
+        <div class="order-header">
+            <div>
+                <b class="order-id">Order #<span th:text="${order.id}"></span></b><br>
+                <span class="order-date" th:text="${#temporals.format(order.orderDate, 'dd-MMM-yyyy HH:mm')}">Date</span>
+            </div>
+            
+            <span class="order-status" 
+                  th:text="${order.status}"
+                  th:style="${order.status == 'PENDING' ? 'background-color:#ffc107; color:#333;' : 
+                             order.status == 'COOKING' ? 'background-color:#fd7e14;' :
+                             order.status == 'DELIVERED' ? 'background-color:#28a745;' : 
+                             order.status == 'SUCCESS' ? 'background-color:#28a745;' :
+                             order.status == 'CANCELLED' ? 'background-color:#dc3545;' : 
+                             'background-color:#6c757d;'}">
+            </span>
+        </div>
+
+        <div class="order-body">
+            <ul class="item-list">
+                <li th:each="item : ${order.items}" class="item-row">
+                    <span th:text="${item.quantity} + ' x ' + ${item.name}">Pizza Name</span>
+                    <span th:text="'$' + ${item.price * item.quantity}">$0.00</span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="order-footer">
+            <div>
+                <a th:if="${order.status == 'PENDING' or order.status == 'SUCCESS'}" 
+                   th:href="@{/my-orders/cancel/{id}(id=${order.id})}" 
+                   class="btn-cancel"
+                   onclick="return confirm('Are you sure you want to cancel this order?');">
+                   ✖ Cancel Order
+                </a>
+            </div>
+
+            <div>
+                <span class="total-label">Total: </span>
+                <span class="total-amount" th:text="'$' + ${order.totalPrice}">$0.00</span>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="/user/dashboard" class="btn-back">Back to Dashboard</a>
+    </div>
+</div>
+
+</body>
+</html>

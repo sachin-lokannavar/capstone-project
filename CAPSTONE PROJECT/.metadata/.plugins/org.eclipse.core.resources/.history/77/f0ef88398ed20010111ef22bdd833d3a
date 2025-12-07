@@ -1,0 +1,15 @@
+package com.pizzastore.userservice.client;
+
+import com.pizzastore.userservice.dto.MessageDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+// "message-service" must match the application.name in message-service's properties
+@FeignClient(name = "message-service") 
+public interface MessageClient {
+
+    // This path matches the Controller in the new Message Service
+    @PostMapping("/api/send") 
+    void sendMessage(@RequestBody MessageDto message);
+}

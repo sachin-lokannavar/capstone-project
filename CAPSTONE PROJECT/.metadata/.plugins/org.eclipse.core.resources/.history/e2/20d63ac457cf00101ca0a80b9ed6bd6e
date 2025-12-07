@@ -1,0 +1,10 @@
+package com.pizzastore.adminservice.serviceImpl;
+
+import com.pizzastore.adminservice.bean.Admin;
+
+public interface AdminServiceImpl {
+
+    Admin saveAdmin(Admin admin);
+
+    Admin login(String username, String password);
+}

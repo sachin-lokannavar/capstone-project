@@ -1,0 +1,5 @@
+package com.pizzastore.adminservice.client;
+
+public class UserClient {
+
+}

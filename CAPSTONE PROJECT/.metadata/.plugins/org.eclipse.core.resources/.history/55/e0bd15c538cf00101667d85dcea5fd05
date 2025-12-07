@@ -1,0 +1,5 @@
+package com.pizzastore.service;
+
+public class AdminService {
+
+}

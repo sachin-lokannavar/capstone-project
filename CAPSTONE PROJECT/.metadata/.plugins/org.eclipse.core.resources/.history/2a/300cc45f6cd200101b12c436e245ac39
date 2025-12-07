@@ -1,0 +1,5 @@
+package com.pizzastore.orderservice.dto;
+
+public class OrderItemDto {
+
+}

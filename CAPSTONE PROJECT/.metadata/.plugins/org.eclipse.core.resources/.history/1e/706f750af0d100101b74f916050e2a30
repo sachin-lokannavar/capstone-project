@@ -1,0 +1,10 @@
+<div class="container">
+    <h2>👑 Admin Dashboard</h2>
+    <p>Welcome, <span th:text="${name}">Admin</span>!</p>
+    
+    <a th:href="@{/menu}" class="btn btn-menu">🍕 Manage Menu Items</a>
+    
+    <a th:href="@{/orders}" class="btn" style="background-color: #8e44ad;">📦 Manage Orders</a>
+    
+    <a th:href="@{/logout}" class="btn btn-logout">Logout</a>
+</div>

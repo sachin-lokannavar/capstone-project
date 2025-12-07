@@ -1,0 +1,41 @@
+package com.pizzastore.orderservice.serviceImpl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.pizzastore.orderservice.beans.Order;
+import com.pizzastore.orderservice.repository.OrderRepository;
+import com.pizzastore.orderservice.service.OrderService;
+import java.util.List;
+
+@Service
+public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Override
+    public Order placeOrder(Order order) {
+        
+        return orderRepository.save(order);
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
+    @Override
+    public Order getOrderById(Long id) {
+        return orderRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void cancelOrder(Long id) {
+        orderRepository.deleteById(id);
+    }
+    @Override
+    public Double getTotalRevenue() {
+        Double revenue = orderRepository.getTotalRevenue();
+        return (revenue != null) ? revenue : 0.0;
+    }
+}

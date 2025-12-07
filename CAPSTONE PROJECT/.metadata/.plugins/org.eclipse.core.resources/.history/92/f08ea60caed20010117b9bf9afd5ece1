@@ -1,0 +1,34 @@
+// ... existing imports ...
+import com.pizzastore.userservice.service.UserService; // Import this
+import com.pizzastore.userservice.beans.User;
+import java.util.List;
+
+@Controller
+@RequestMapping("/admin")
+public class AdminController {
+
+    @Autowired private MenuClient menuClient;
+    @Autowired private UserService userService; // ⭐ Autowire UserService
+
+    // ... existing isAdmin helper ...
+    // ... existing dashboard/menu endpoints ...
+
+    // ⭐ NEW: View All Users
+    @GetMapping("/users")
+    public String manageUsers(Model model, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        
+        List<User> users = userService.getAllUsers();
+        model.addAttribute("users", users);
+        return "admin-users"; // We will create this HTML next
+    }
+
+    // ⭐ NEW: Delete User
+    @GetMapping("/users/delete/{id}")
+    public String deleteUser(@PathVariable Long id, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/user/login";
+        
+        userService.deleteUser(id);
+        return "redirect:/admin/users?deleted=true";
+    }
+}

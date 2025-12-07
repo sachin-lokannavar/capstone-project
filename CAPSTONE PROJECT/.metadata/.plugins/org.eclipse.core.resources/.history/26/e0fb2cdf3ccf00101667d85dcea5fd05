@@ -1,0 +1,37 @@
+# -----------------------------------------------------
+# SERVICE IDENTIFICATION
+# -----------------------------------------------------
+spring.application.name=admin-service
+
+# Let Eureka assign a random port (recommended for microservices)
+server.port=0
+
+
+# -----------------------------------------------------
+# H2 DATABASE CONFIGURATION
+# -----------------------------------------------------
+spring.datasource.url=jdbc:h2:mem:admindb
+spring.datasource.driverClassName=org.h2.Driver
+spring.datasource.username=admin
+spring.datasource.password=admin
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
+
+# Enable H2 console
+spring.h2.console.enabled=true
+spring.h2.console.path=/h2-console
+
+
+# -----------------------------------------------------
+# EUREKA CLIENT CONFIGURATION
+# -----------------------------------------------------
+eureka.client.service-url.defaultZone=http://localhost:8761/eureka/
+eureka.client.register-with-eureka=true
+eureka.client.fetch-registry=true
+
+
+# -----------------------------------------------------
+# SPRING CLOUD CONFIG SERVER
+# -----------------------------------------------------
+spring.config.import=optional:configserver:http://localhost:8888

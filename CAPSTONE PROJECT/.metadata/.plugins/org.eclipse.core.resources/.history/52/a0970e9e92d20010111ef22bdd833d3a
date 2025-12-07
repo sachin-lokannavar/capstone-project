@@ -1,0 +1,205 @@
+package com.pizzastore.userservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpSession;
+
+import com.pizzastore.userservice.service.UserService;
+import com.pizzastore.userservice.beans.User;
+import com.pizzastore.userservice.client.MenuClient;
+import com.pizzastore.userservice.client.OrderClient;
+import com.pizzastore.userservice.client.MessageClient; // ✅ IMPORT THIS
+import com.pizzastore.userservice.dto.OrderRequest;
+import com.pizzastore.userservice.dto.OrderItemRequest;
+import com.pizzastore.userservice.dto.MessageDto; // ✅ IMPORT THIS
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+@Controller
+public class UserController {
+
+    @Autowired private UserService userService;
+    @Autowired private MenuClient menuClient;
+    @Autowired private OrderClient orderClient;
+    
+    // ✅ ADD THIS AUTOWIRE
+    @Autowired 
+    private MessageClient messageClient;
+
+    // ... (Keep existing Home, Login, Register, Dashboard methods) ...
+    
+    @GetMapping("/")
+    public String home() { return "home"; }
+
+    @GetMapping("/register")
+    public String registerPage() { return "register"; }
+
+    @PostMapping("/register")
+    public String register(@ModelAttribute User user, Model model) {
+        try {
+            userService.saveUser(user);
+            return "redirect:/login"; 
+        } catch (Exception e) {
+            model.addAttribute("error", "Registration failed");
+            return "register";
+        }
+    }
+
+    @GetMapping("/login")
+    public String loginPage() { return "login"; }
+
+    @PostMapping("/login")
+    public String login(@RequestParam String username, @RequestParam String password, HttpSession session, Model model) {
+        User user = userService.login(username, password);
+        if (user != null) {
+            session.setAttribute("loggedInUser", user);
+            if (user.getName().toLowerCase().contains("admin") || user.getEmail().toLowerCase().contains("admin")) {
+                return "redirect:/admin/dashboard";
+            }
+            return "redirect:/dashboard";
+        }
+        model.addAttribute("error", "Invalid Credentials");
+        return "login";
+    }
+
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("loggedInUser");
+        model.addAttribute("name", (user != null) ? user.getName() : "Guest");
+        return "dashboard";
+    }
+    
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+
+    // ... (Keep existing Menu, Cart, Checkout methods) ...
+    // I am omitting them here to save space, keep them as they were in your previous file.
+
+    @GetMapping("/menu")
+    public String viewMenu(Model model) {
+        model.addAttribute("menuItems", menuClient.getAllItems());
+        return "user-menu"; 
+    }
+    
+    @GetMapping("/cart/add/{id}")
+    public String addToCart(@PathVariable Long id, @RequestParam String name, @RequestParam Double price, HttpSession session) {
+        List<OrderItemRequest> cart = (List<OrderItemRequest>) session.getAttribute("cart");
+        if (cart == null) cart = new ArrayList<>();
+        boolean exists = false;
+        for(OrderItemRequest item : cart) {
+            if(item.getMenuItemId().equals(id)) {
+                item.setQuantity(item.getQuantity() + 1);
+                exists = true;
+                break;
+            }
+        }
+        if(!exists) cart.add(new OrderItemRequest(id, name, price, 1));
+        session.setAttribute("cart", cart);
+        return "redirect:/menu"; 
+    }
+
+    @GetMapping("/cart/remove/{id}")
+    public String removeFromCart(@PathVariable Long id, HttpSession session) {
+        List<OrderItemRequest> cart = (List<OrderItemRequest>) session.getAttribute("cart");
+        if (cart != null) {
+            cart.removeIf(item -> item.getMenuItemId().equals(id));
+            session.setAttribute("cart", cart);
+        }
+        return "redirect:/cart";
+    }
+
+    @GetMapping("/cart/clear")
+    public String clearCart(HttpSession session) {
+        session.removeAttribute("cart");
+        return "redirect:/menu";
+    }
+
+    @GetMapping("/cart")
+    public String viewCart(HttpSession session, Model model) {
+        List<OrderItemRequest> cart = (List<OrderItemRequest>) session.getAttribute("cart");
+        double total = 0.0;
+        if(cart != null) {
+            for(OrderItemRequest item : cart) total += (item.getPrice() * item.getQuantity());
+        }
+        model.addAttribute("cartItems", cart);
+        model.addAttribute("totalPrice", total);
+        return "cart"; 
+    }
+
+    @GetMapping("/cart/checkout")
+    public String checkout(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        List<OrderItemRequest> cart = (List<OrderItemRequest>) session.getAttribute("cart");
+        if(cart == null || cart.isEmpty()) return "redirect:/cart?error=EmptyCart";
+
+        OrderRequest orderRequest = new OrderRequest();
+        orderRequest.setUserId(user != null ? user.getId() : 1L); 
+        orderRequest.setItems(cart);
+
+        try {
+            orderClient.placeOrder(orderRequest);
+            session.removeAttribute("cart");
+            return "redirect:/success";
+        } catch (Exception e) {
+            return "redirect:/cart?error=OrderFailed";
+        }
+    }
+
+    @GetMapping("/success")
+    public String successPage() { return "order-success"; }
+
+    @GetMapping("/my-orders")
+    public String viewOrderHistory(Model model, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) return "redirect:/login";
+        try {
+            List<Object> orders = orderClient.getOrdersByUser(user.getId());
+            model.addAttribute("orders", orders);
+        } catch (Exception e) {
+            model.addAttribute("error", "Could not fetch orders.");
+        }
+        return "my-orders";
+    }
+
+    @GetMapping("/my-orders/cancel/{id}")
+    public String cancelUserOrder(@PathVariable Long id, HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) return "redirect:/login";
+        orderClient.updateOrderStatus(id, "CANCELLED");
+        return "redirect:/my-orders?cancelled=true";
+    }
+
+    // 👇 NEW CONTACT METHODS (Using Message Service) 👇
+
+    @GetMapping("/contact")
+    public String showContactPage(HttpSession session) {
+        if (session.getAttribute("loggedInUser") == null) {
+            return "redirect:/login";
+        }
+        return "contact"; // Ensure contact.html exists
+    }
+
+    @PostMapping("/contact")
+    public String sendMessage(@RequestParam String content, HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        // Create DTO and send via Client
+        MessageDto msg = new MessageDto();
+        msg.setUserId(user.getId());
+        msg.setUsername(user.getName());
+        msg.setContent(content);
+
+        messageClient.sendMessage(msg);
+
+        return "redirect:/dashboard?messageSent=true";
+    }
+}

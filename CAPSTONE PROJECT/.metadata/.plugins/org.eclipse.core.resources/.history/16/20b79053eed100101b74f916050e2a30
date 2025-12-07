@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Edit Item</title>
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h2>Edit Pizza</h2>
+    <form th:action="@{/admin/menu/update/{id}(id=${item.id})}" method="post" th:object="${item}">
+        <label>Name:</label> <input type="text" th:field="*{name}" required> <br>
+        <label>Price:</label> <input type="number" step="0.01" th:field="*{price}" required> <br>
+        <label>Category:</label>
+        <select name="categoryId">
+            <option th:each="cat : ${categories}" th:value="${cat.categoryId}" th:text="${cat.categoryName}" 
+                    th:selected="${cat.categoryId == item.categoryId}"></option>
+        </select> <br>
+        <button type="submit">Update</button>
+    </form>
+    <a th:href="@{/admin/menu}">Cancel</a>
+</body>
+</html>

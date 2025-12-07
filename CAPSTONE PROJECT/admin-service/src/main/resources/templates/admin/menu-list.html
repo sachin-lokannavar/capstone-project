@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Menu Manager</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .menu-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .menu-table th, .menu-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .menu-table th { background-color: #f2f2f2; }
+        .btn-add { background-color: #28a745; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; }
+        .btn-edit { background-color: #ffc107; color: black; padding: 5px 10px; text-decoration: none; border-radius: 3px; margin-right: 5px; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; text-decoration: none; border-radius: 3px; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 800px;">
+    <h2>🍕 Menu Management</h2>
+    
+    <div style="text-align: right; margin-bottom: 15px;">
+        <a th:href="@{/menu/add}" class="btn-add">+ Add New Pizza</a>
+        
+        <a th:href="@{/dashboard}" style="margin-left: 10px;">Back to Dashboard</a>
+    </div>
+
+    <table class="menu-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${menuItems}">
+                <td>
+                    <img th:if="${item.imageUrl != null}" th:src="${item.imageUrl}" alt="Pizza" width="50" height="50" style="object-fit:cover; border-radius:50%;">
+                    <span th:if="${item.imageUrl == null}">No Image</span>
+                </td>
+                
+                <td th:text="${item.name}"></td>
+                <td th:text="'$' + ${item.price}"></td>
+                
+                <td th:text="${item.category != null ? item.category.categoryName : 'No Category'}"></td>
+                
+                <td>
+                    <a th:href="@{/menu/edit/{id}(id=${item.id})}" class="btn-edit">Edit</a>
+                    
+                    <a th:href="@{/menu/delete/{id}(id=${item.id})}" class="btn-delete" 
+                       onclick="return confirm('Are you sure you want to delete this item?');">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

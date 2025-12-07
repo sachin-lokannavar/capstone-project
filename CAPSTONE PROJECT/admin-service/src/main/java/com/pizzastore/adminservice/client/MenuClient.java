@@ -1,0 +1,30 @@
+package com.pizzastore.adminservice.client;
+
+import com.pizzastore.adminservice.dto.MenuItemDto;
+import com.pizzastore.adminservice.dto.MenuCategoryDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
+
+@FeignClient(name = "menu-service")
+public interface MenuClient {
+
+    @GetMapping("/menu/items")
+    List<MenuItemDto> getAllItems();
+
+    @PostMapping("/menu/items")
+    MenuItemDto addItem(@RequestBody MenuItemDto item);
+
+    @GetMapping("/menu/categories")
+    List<MenuCategoryDto> getAllCategories();
+
+    
+    @GetMapping("/menu/items/{id}")
+    MenuItemDto getItemById(@PathVariable("id") Long id);
+
+    @PutMapping("/menu/items/{id}")
+    MenuItemDto updateItem(@PathVariable("id") Long id, @RequestBody MenuItemDto item);
+
+    @DeleteMapping("/menu/items/{id}")
+    void deleteItem(@PathVariable("id") Long id);
+}

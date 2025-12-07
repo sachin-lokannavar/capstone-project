@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        .order-table th, .order-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .order-table th { background-color: #34495e; color: white; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 900px;">
+    <h2>📦 Customer Orders</h2>
+    <a th:href="@{/dashboard}" class="btn">Back to Dashboard</a>
+
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Items</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="${order.id}">ID</td>
+                <td th:text="${order.orderDate}">Date</td>
+                <td th:text="'$' + ${order.totalPrice}">Total</td>
+                <td th:text="${order.status}">Status</td>
+                <td>
+                    <div th:each="item : ${order.items}">
+                        <span th:text="${item.quantity} + ' x ' + ${item.name}"></span>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

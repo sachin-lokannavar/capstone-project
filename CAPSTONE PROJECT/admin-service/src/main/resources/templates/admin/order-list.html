@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        /* Table Styling */
+        .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .order-table th, .order-table td { padding: 12px; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
+        .order-table th { background-color: #34495e; color: white; }
+        
+        /* Status Badges */
+        /* FIX: Added a default background-color (#7f8c8d) so white text is always visible */
+        .status-badge { 
+            padding: 5px 10px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            color: white; 
+            font-size: 0.85em; 
+            display: inline-block; 
+            min-width: 80px; 
+            text-align: center;
+            background-color: #7f8c8d; /* Default Grey for unknown statuses */
+        }
+        
+        /* Specific Status Colors */
+        .status-PENDING { background-color: #f39c12; }        /* Orange */
+        .status-SUCCESS { background-color: #27ae60; }        /* Green (Payment Done) */
+        .status-COOKING { background-color: #e67e22; }        /* Darker Orange */
+        .status-DELIVERED { background-color: #2980b9; }      /* Blue */
+        .status-CANCELLED { background-color: #c0392b; }      /* Red */
+        .status-PAYMENT_FAILED { background-color: #c0392b; } /* Red */
+
+        /* Action Buttons */
+        .btn-action { padding: 5px 10px; border-radius: 4px; text-decoration: none; color: white; font-size: 0.8em; margin-right: 5px; display: inline-block; border: none; cursor: pointer; }
+        .btn-cook { background-color: #d35400; }
+        .btn-cook:hover { background-color: #a04000; }
+        
+        .btn-deliver { background-color: #2980b9; }
+        .btn-deliver:hover { background-color: #1f618d; }
+        
+        .btn-cancel { background-color: #c0392b; }
+        .btn-cancel:hover { background-color: #922b21; }
+
+        .item-list { margin: 0; padding-left: 20px; font-size: 0.9em; color: #555; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 900px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>📦 Customer Orders</h2>
+        <a th:href="@{/dashboard}" class="btn" style="background-color: #7f8c8d; color: white; text-decoration: none; padding: 8px 15px; border-radius: 4px;">Back to Dashboard</a>
+    </div>
+	<div th:if="${param.updated}" style="background-color: #d4edda; color: #155724; padding: 10px; margin-bottom: 15px; border-radius: 4px; text-align: center;">
+        ✅ Order Status Updated Successfully!
+    </div>
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th style="width: 5%;">ID</th>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 30%;">Items</th>
+                <th style="width: 10%;">Total</th>
+                <th style="width: 15%;">Status</th>
+                <th style="width: 25%;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="'#' + ${order.id}">#1</td>
+                
+                <td th:text="${order.orderDate}">2025-12-06</td>
+                
+                <td>
+                    <ul class="item-list">
+                        <li th:each="item : ${order.items}" 
+                            th:text="${item.quantity} + ' x ' + ${item.name}">
+                            1 x Pizza
+                        </li>
+                    </ul>
+                </td>
+                
+                <td th:text="'$' + ${order.totalPrice}">$20.00</td>
+                
+                <td>
+                    <span th:class="'status-badge status-' + ${order.status}" 
+                          th:text="${order.status}">PENDING</span>
+                </td>
+
+                <td>
+                    <a th:if="${order.status == 'PENDING' or order.status == 'SUCCESS'}" 
+                       th:href="@{/orders/update/{id}(id=${order.id}, status='COOKING')}" 
+                       class="btn-action btn-cook">Start Cooking</a>
+
+                    <a th:if="${order.status == 'COOKING'}" 
+                       th:href="@{/orders/update/{id}(id=${order.id}, status='DELIVERED')}" 
+                       class="btn-action btn-deliver">Deliver</a>
+                       
+                    <a th:if="${order.status != 'DELIVERED' and order.status != 'CANCELLED' and order.status != 'PAYMENT_FAILED'}" 
+                       th:href="@{/orders/update/{id}(id=${order.id}, status='CANCELLED')}" 
+                       class="btn-action btn-cancel"
+                       onclick="return confirm('Are you sure you want to cancel this order?');">X</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div th:if="${orders == null or orders.empty}" style="text-align:center; padding:40px; color: #777;">
+        <h3>No orders found.</h3>
+        <p>Wait for customers to place an order!</p>
+    </div>
+</div>
+</body>
+</html>

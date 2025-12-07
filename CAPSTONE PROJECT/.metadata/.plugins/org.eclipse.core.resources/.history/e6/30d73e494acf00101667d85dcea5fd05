@@ -1,0 +1,40 @@
+package com.pizzastore.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.pizzastore.service.AdminService;
+import com.pizzastore.bean.Admin;
+
+@Controller
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    // Show Admin Login Page
+    @GetMapping("/admin/login")
+    public String adminLoginPage() {
+        return "admin-login"; // thymeleaf template
+    }
+
+    // Process Login
+    @PostMapping("/admin/login")
+    public String adminLogin(@RequestParam String username,
+                             @RequestParam String password,
+                             Model model) {
+
+        Admin admin = adminService.login(username, password);
+
+        if (admin != null) {
+            model.addAttribute("adminName", admin.getUsername());
+            return "admin-dashboard";  // success page
+        }
+
+        model.addAttribute("error", "Invalid Admin Credentials");
+        return "admin-login"; // return login page with error
+    }
+}
+

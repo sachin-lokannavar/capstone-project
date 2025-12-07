@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Make Payment</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="container" style="max-width: 500px;">
+    <h2>Secure Payment</h2>
+    
+    <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+        <p><strong>Order ID:</strong> <span th:text="${payment.orderId}"></span></p>
+        <p><strong>Total Amount:</strong> $<span th:text="${payment.amount}"></span></p>
+    </div>
+
+    <form th:action="@{/pay}" method="post" th:object="${payment}">
+        <input type="hidden" th:field="*{orderId}">
+        <input type="hidden" th:field="*{amount}">
+
+        <label>Select Payment Mode:</label>
+        <select th:field="*{paymentMode}">
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="UPI">UPI / GPay</option>
+            <option value="Cash">Cash on Delivery</option>
+        </select>
+
+        <label>Card Number (Optional):</label>
+        <input type="text" placeholder="XXXX-XXXX-XXXX-XXXX">
+
+        <button type="submit" style="background-color: #28a745;">Pay Now</button>
+    </form>
+    
+    <br>
+    <a href="/order/" style="display:block; text-align:center; color: red;">Cancel Payment</a>
+</div>
+</body>
+</html>

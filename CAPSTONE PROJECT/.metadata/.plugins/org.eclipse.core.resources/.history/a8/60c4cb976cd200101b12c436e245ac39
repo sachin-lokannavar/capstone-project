@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Manage Orders</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .order-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
+        .order-table th, .order-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .order-table th { background-color: #34495e; color: white; }
+        .status-badge { padding: 5px 10px; border-radius: 4px; font-weight: bold; color: white; font-size: 0.85em; }
+        
+        .status-PENDING { background-color: #f39c12; }
+        .status-SUCCESS { background-color: #27ae60; }
+        .status-PAYMENT_FAILED { background-color: #c0392b; }
+    </style>
+</head>
+<body>
+<div class="container" style="width: 900px;">
+    <h2>📦 Customer Orders</h2>
+    
+    <div style="text-align: right; margin-bottom: 15px;">
+        <a th:href="@{/dashboard}" class="btn">Back to Dashboard</a>
+    </div>
+
+    <table class="order-table">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="order : ${orders}">
+                <td th:text="'#' + ${order.id}"></td>
+                <td th:text="${order.orderDate}"></td>
+                <td th:text="'$' + ${order.totalPrice}"></td>
+                <td>
+                    <span th:class="'status-badge status-' + ${order.status}" 
+                          th:text="${order.status}"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+package com.pizzastore.adminservice.controller;
+
+import com.pizzastore.adminservice.client.OrderClient;
+import com.pizzastore.adminservice.dto.OrderDto;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import java.util.List;
+
+@Controller
+@RequestMapping("/orders") // Maps to /admin/orders (due to context-path)
+public class AdminOrderController {
+
+    @Autowired
+    private OrderClient orderClient;
+
+    @GetMapping
+    public String viewAllOrders(Model model) {
+        List<OrderDto> orders = orderClient.getAllOrders();
+        model.addAttribute("orders", orders);
+        return "admin/order-list";
+    }
+}

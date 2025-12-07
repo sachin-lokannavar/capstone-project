@@ -1,0 +1,22 @@
+package com.pizzastore.userservice.exception;
+
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice
+public class GlobalExceptionHandler {
+
+    // Handle ALL general exceptions
+    @ExceptionHandler(Exception.class)
+    public String handleGeneralException(Exception e, Model model) {
+        // Log the error (optional, helpful for debugging)
+        System.out.println(">>> ERROR CAUGHT: " + e.getMessage());
+        
+        // Pass the error message to the view
+        model.addAttribute("errorMessage", e.getMessage());
+        
+        // Return the "error" HTML template
+        return "error";
+    }
+}

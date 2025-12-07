@@ -1,0 +1,49 @@
+package com.pizzastore.userservice.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf(csrf -> csrf.disable()) // Disable CSRF
+            .authorizeHttpRequests(auth -> auth
+                // 1. Static Resources (CSS, JS, Images) - Allow ALL
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+                
+                // 2. Public Pages (Home, Login, Register, H2 Console) - Allow ALL
+                .requestMatchers("/", "/login", "/register", "/h2-console/**").permitAll()
+                
+                // 3. User & Admin Pages - Allow ALL (We handle security in Controller)
+                // This whitelist is critical. If a page isn't here, Spring blocks it.
+                .requestMatchers("/dashboard", "/menu/**", "/cart/**", "/success").permitAll()
+                .requestMatchers("/my-orders", "/my-orders/**").permitAll()
+                .requestMatchers("/admin/**").permitAll()
+                
+                // 4. Everything else needs authentication (fallback)
+                .anyRequest().authenticated()
+            )
+            .headers(headers -> headers.frameOptions().disable()) // Allow H2 Console frames
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login")
+                .permitAll()
+            );
+            
+        return http.build();
+    }
+}

@@ -1,0 +1,28 @@
+package com.pizzastore.userservice.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.pizzastore.userservice.beans.User;
+import com.pizzastore.userservice.repository.UserRepository;
+import com.pizzastore.userservice.service.UserService;
+
+@Service
+public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public User saveUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User login(String username, String password) {
+        User user = userRepository.findByUsername(username);
+        if(user != null && user.getPassword().equals(password)) {
+            return user;
+        }
+        return null;
+    }
+}

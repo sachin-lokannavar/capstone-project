@@ -1,0 +1,5 @@
+package com.pizzastore.userservice.dto;
+
+public class MessageDto {
+
+}

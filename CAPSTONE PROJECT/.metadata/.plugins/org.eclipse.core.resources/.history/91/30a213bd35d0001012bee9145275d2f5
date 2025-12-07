@@ -1,0 +1,66 @@
+package com.pizzastore.adminservice.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import com.pizzastore.adminservice.entity.Admin;
+import com.pizzastore.adminservice.service.AdminService;
+
+@Controller
+public class AdminController {
+
+    @Autowired
+    private AdminService adminService;
+
+    // Home (optional)
+    @GetMapping("/")
+    public String home() {
+        return "home";
+    }
+
+    // Show register form
+    @GetMapping("/register")
+    public String showRegisterPage(Model model) {
+        model.addAttribute("admin", new Admin());
+        return "admin-register";
+    }
+
+    // Handle registration
+    @PostMapping("/register")
+    public String registerAdmin(@ModelAttribute Admin admin, Model model) {
+        adminService.saveAdmin(admin);
+        // Redirect needs to go back through the Gateway URL structure
+        return "redirect:/admin/login";  
+    }
+
+    // Show login form
+    @GetMapping("/login")
+    public String loginPage() {
+        return "admin-login";
+    }
+
+    // Handle login
+    @PostMapping("/login")
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        Model model) {
+
+        Admin admin = adminService.login(username, password);
+
+        if (admin != null) {
+            model.addAttribute("name", admin.getName());
+            return "admin-dashboard";
+        }
+
+        model.addAttribute("error", "Invalid Credentials");
+        return "admin-login";
+    }
+
+    @GetMapping("/logout")
+    public String logout(Model model) {
+        model.addAttribute("message", "Logged out successfully.");
+        return "admin-login";
+    }
+}
