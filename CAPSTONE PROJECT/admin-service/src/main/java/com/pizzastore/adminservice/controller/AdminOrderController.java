@@ -23,7 +23,7 @@ public class AdminOrderController {
             return "redirect:/login";
         }
 
-        // This call will now work because the client path matches the service
+        
         List<OrderDto> orders = orderClient.getAllOrders();
         model.addAttribute("orders", orders);
         return "admin/order-list";
