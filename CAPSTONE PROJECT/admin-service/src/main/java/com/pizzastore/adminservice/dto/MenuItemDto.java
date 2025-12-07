@@ -1,7 +1,7 @@
 package com.pizzastore.adminservice.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-// ⭐ ADD THESE IMPORTS
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,13 +10,13 @@ public class MenuItemDto {
 
     private Long id;
 
-    //  Add Annotation
+    
     @NotBlank(message = "Name cannot be empty")
     private String name;
 
     private String description;
 
-    //  Add Annotation
+    
     @NotNull(message = "Price is required")
     @Min(value = 0, message = "Price cannot be negative")
     private Double price;
