@@ -103,14 +103,14 @@ public class UserController {
         List<Object> items = new ArrayList<>();
         
         try {
-            // ⭐ FIX: Handle Menu Service Failure Gracefully
+            
             if (keyword != null && !keyword.isEmpty()) {
                 items = menuClient.searchItems(keyword);
             } else {
                 items = menuClient.getAllItems();
             }
         } catch (Exception e) {
-            System.out.println("❌ Menu Service is down: " + e.getMessage());
+            System.out.println(" Menu Service is down: " + e.getMessage());
             model.addAttribute("error", "Menu is currently unavailable. Please try again later.");
         }
         
@@ -197,7 +197,7 @@ public class UserController {
             session.removeAttribute("cart");
             return "redirect:/success";
         } catch (Exception e) {
-            System.out.println("❌ Order Failed: " + e.getMessage());
+            System.out.println("Order Failed: " + e.getMessage());
             return "redirect:/cart?error=OrderFailed";
         }
     }
@@ -246,7 +246,7 @@ public class UserController {
             List<MessageDto> history = messageClient.getMessagesByUser(user.getId());
             model.addAttribute("messages", history);
         } catch (Exception e) {
-            System.out.println("❌ Message Service Down: " + e.getMessage());
+            System.out.println(" Message Service Down: " + e.getMessage());
             model.addAttribute("error", "Messaging unavailable.");
         }
         
@@ -267,8 +267,8 @@ public class UserController {
             messageClient.sendMessage(msg);
             return "redirect:/dashboard?messageSent=true";
         } catch (Exception e) {
-            // ⭐ FIX: Redirect to dashboard with error instead of crashing
-            System.out.println("❌ Failed to send message: " + e.getMessage());
+            
+            System.out.println(" Failed to send message: " + e.getMessage());
             return "redirect:/contact?error=SendFailed";
         }
     }
