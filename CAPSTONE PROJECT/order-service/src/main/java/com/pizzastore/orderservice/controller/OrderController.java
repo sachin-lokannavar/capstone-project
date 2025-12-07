@@ -82,7 +82,7 @@ public class OrderController {
         return orderRepository.findByUserId(userId);
     }
     
-    //  This is the endpoint the Admin Client was trying to reach
+    
     @GetMapping("/all") 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
@@ -114,7 +114,7 @@ public class OrderController {
     }  
     
     public Order paymentFallback(OrderRequest request, Throwable t) {
-        System.out.println("⚠️ Payment Service is down! Saving order as PAYMENT_PENDING.");
+        System.out.println(" Payment Service is down! Saving order as PAYMENT_PENDING.");
         
         Order order = new Order();
         order.setUserId(request.getUserId());
