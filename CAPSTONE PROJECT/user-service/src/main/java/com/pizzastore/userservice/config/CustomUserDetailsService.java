@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username);
         
         if (user == null) {
-            System.out.println("❌ User NOT FOUND in Database!");
+            System.out.println("User NOT FOUND in Database!");
             throw new UsernameNotFoundException("User not found");
         }
         
